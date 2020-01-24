@@ -48,7 +48,6 @@ export function removeInstance(model, params={}) {
 export function setInstance(model, data) {
   axios.post(server + '/'+ model +'/', data)
   .then(function (response) {
-    console.log(response);
     dispatcher.dispatch({
       type: "SET_INSTANCE_SUCCESS",
       instance: response.data,
@@ -62,7 +61,6 @@ export function setInstance(model, data) {
 export function updateInstance(model, data) {
   axios.put(server + '/'+ model +'/'+data.id, data)
   .then(function (response) {
-    console.log(response);
     dispatcher.dispatch({
       type: "SET_INSTANCE_SUCCESS",
       instance: response.data,

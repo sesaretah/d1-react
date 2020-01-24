@@ -16,7 +16,7 @@ import {
 import { dict} from '../../Dict';
 import ModelStore from "../../stores/ModelStore";
 import * as MyActions from "../../actions/MyActions";
-import RoleForm from "../../containers/roles/form"
+import ProfileForm from "../../containers/profiles/form"
 import Framework7 from 'framework7/framework7.esm.bundle';
 
 
@@ -30,7 +30,7 @@ export default class DocumentUpdate extends Component {
 
 
     this.state = {
-      role : {},
+      profile : {},
     }
   }
 
@@ -48,7 +48,7 @@ export default class DocumentUpdate extends Component {
 
   submit(){
     var data = {id:this.state.id, title: this.state.title}
-    MyActions.updateInstance('roles', data);
+    MyActions.updateInstance('profiles', data);
   }
   componentDidMount(){
     this.loadData();
@@ -57,43 +57,43 @@ export default class DocumentUpdate extends Component {
   loadData(){
     const f7: Framework7 = Framework7.instance;
     f7.toast.show({ text: dict.receiving, closeTimeout: 2000, position: 'top'});
-    if (this.$f7route.params['roleId']) {
-      MyActions.getInstance('roles', this.$f7route.params['roleId']);
+    if (this.$f7route.params['profileId']) {
+      MyActions.getInstance('profiles', this.$f7route.params['profileId']);
     }
   }
 
 
   getInstance(){
-    var role = ModelStore.getIntance()
-    var klass = ModelStore.getKlass()
-    if (role && klass === 'Role'){
+    var profile = ModelStore.getIntance()
+    console.log(profile);
+    if (profile){
       this.setState({
-        title: role.title,
-        id: role.id,
-        role: role,
+        title: profile.title,
+        id: profile.id,
+        profile: profile,
       });
     }
   }
 
   handleChangeValue(obj) {
-
+    console.log(obj);
     this.setState(obj);
   }
 
 
   setInstance(){
     const self = this;
-    this.$f7router.navigate('/roles/');
+    this.$f7router.navigate('/profiles/');
   }
 
 
   render() {
-        const {role} = this.state;
+        const {profile} = this.state;
     return (
       <Page>
-        <Navbar title={dict.role_form} backLink={dict.back} />
-        <BlockTitle>{dict.role_form}</BlockTitle>
-        <RoleForm role={role} submit={this.submit} editing={true} handleChange={this.handleChangeValue}/>
+        <Navbar title={dict.profile_form} backLink={dict.back} />
+        <BlockTitle>{dict.profile_form}</BlockTitle>
+        <ProfileForm profile={profile} submit={this.submit} editing={true} handleChange={this.handleChangeValue}/>
       </Page>
     );
   }

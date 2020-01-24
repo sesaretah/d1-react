@@ -26,11 +26,14 @@ export default class DocumentUpdate extends Component {
     super();
     this.submit = this.submit.bind(this);
     this.setInstance = this.setInstance.bind(this);
-    this.getInstance = this.getInstance.bind(this);    
+    this.getInstance = this.getInstance.bind(this);
     this.handleChangeValue = this.handleChangeValue.bind(this);
     this.onEditorStateChange = this.onEditorStateChange.bind(this)
     this.getList = this.getList.bind(this)
     this.onChangeValue = this.onChangeValue.bind(this)
+    this.removeRecord = this.removeRecord.bind(this)
+    this.deleteInstance = this.deleteInstance.bind(this)
+
 
     this.state = {
       document: {},
@@ -39,7 +42,9 @@ export default class DocumentUpdate extends Component {
       workflowTables: null,
       workflowId: null,
       auxiliaryTables: [],
+      currentWorkflow: null,
       fields: [],
+      records: [],
       title: '',
       abstract: '',
       page: 0
@@ -50,17 +55,21 @@ export default class DocumentUpdate extends Component {
     ModelStore.on("got_instance", this.getInstance);
     ModelStore.on("set_instance", this.setInstance);
     ModelStore.on("got_list", this.getList);
+    ModelStore.on("deleted_instance", this.deleteInstance);
+
   }
 
   componentWillUnmount() {
     ModelStore.removeListener("got_instance", this.getInstance);
     ModelStore.removeListener("set_instance", this.setInstance);
     ModelStore.removeListener("got_list", this.getList);
+    ModelStore.removeListener("deleted_instance", this.deleteInstance);
+
   }
 
   submit(){
-    var data = {id: this.state.id, title: this.state.title, graph: {nodes: window.nodes, edges: window.edges}}
-      MyActions.updateInstance('documents', data);
+    var data = {id: this.state.id, title: this.state.title, workflow_state_id: this.state.workflowStateId, abstract: this.state.abstract, draft: convertToRaw(this.state.editorState.getCurrentContent()), auxiliary_records: this.state.records}
+    MyActions.updateInstance('documents', data);
   }
 
   componentDidMount(){
@@ -74,6 +83,16 @@ export default class DocumentUpdate extends Component {
       MyActions.getInstance('documents', this.$f7route.params['documentId']);
     }
     MyActions.getList('workflows', this.state.page);
+  }
+
+  componentDidUpdate(prev, prevstate) {
+    if (this.state.workflows && this.state.workflowId != prevstate.workflowId){
+      this.setState({currentWorkflow: this.state.workflows.filter(item => item.id == this.state.workflowId)})
+      MyActions.getList('workflow_tables', this.state.page, {workflow_id: this.state.workflowId});
+    }
+    if (this.state.workflowTables != prevstate.workflowTables){
+      MyActions.getList('auxiliary_tables/multiple', this.state.page, {ids: this.state.workflowTables.map(function(k){return k.auxiliary_table_id}).join(',')});
+    }
   }
 
   getList() {
@@ -99,15 +118,39 @@ export default class DocumentUpdate extends Component {
     }
   }
 
+  deleteInstance(){
+    var auxiliaryRecord = ModelStore.getIntance()
+    var klass = ModelStore.getKlass()
+    if (auxiliaryRecord && klass === 'AuxiliaryRecord'){
+      console.log(auxiliaryRecord, this.state.records);
+        this.setState({ records: this.state.records.filter(item => item.uuid != auxiliaryRecord.uuid)})
+    }
+
+  }
+
+  removeRecord(uuid){
+    MyActions.removeInstance('auxiliary_records', {uuid: uuid});
+  }
+
   getInstance(){
     var document = ModelStore.getIntance()
-    if (document){
+    var klass = ModelStore.getKlass()
+    if (document && klass === 'Document'){
+      const contentState = convertFromRaw(document.draft);
+      const editorState = EditorState.createWithContent(contentState);
       this.setState({
         document: document,
-        workflowId: document.workflow_id
+        id: document.id,
+        title: document.title,
+        abstract: document.abstract,
+        workflowId: document.workflow.id,
+        currentWorkflow: [document.workflow],
+        workflowStateId: document.workflow_state.id,
+        records: document.auxiliary_records,
+        editorState: editorState
       });
+      MyActions.getList('workflow_tables', this.state.page, {workflow_id: document.workflow.id});
     }
-    console.log('Hey', this.state);
   }
 
   handleChangeValue(obj) {
@@ -115,25 +158,33 @@ export default class DocumentUpdate extends Component {
   }
 
   onEditorStateChange(editorState){
-      this.setState({
+    this.setState({
       editorState,
     });
   };
 
   onChangeValue(key, value, auxiliaryTable) {
-    var fields = this.state.fields
-    if (fields.length > 0) {
-      for (let i = 0; i < fields.length; i++) {
-        if (fields[i].field_id && fields[i].field_id === key){
-          let newState = Object.assign({}, this.state);
-          newState.fields[i]= {field_id: key, value: value}
-          this.setState(newState);
+
+    var records = this.state.records
+    if (records.length > 0) {
+      for (let i = 0; i < records.length; i++) {
+        if (records[i].auxiliary_table_id === auxiliaryTable.id) {
+          var dr_found = false
+          for (let j = 0; j < records[i].data_record.length; j++) {
+            if ( records[i].data_record[j].field_id === key) {
+              dr_found = true
+              records[i].data_record[j].value = value
+            }
+          }
+          if (!dr_found) {
+            records[i].data_record.push({field_id: key, value: value})
+          }
         } else {
-          this.setState({fields: this.state.fields.concat({field_id: key, value: value})});
+          records.push({auxiliary_table_id: auxiliaryTable.id, data_record : [{field_id: key, value: value}]})
         }
       }
     } else {
-      this.setState({fields: this.state.fields.concat({field_id: key, value: value})});
+      records.push({auxiliary_table_id: auxiliaryTable.id, data_record : [{field_id: key, value: value}]})
     }
   }
 
@@ -144,12 +195,12 @@ export default class DocumentUpdate extends Component {
 
 
   render() {
-        const {workflowId, document, editorState, workflows, auxiliaryTables} = this.state;
+    const {workflowId, title,  abstract, workflowStateId, records, currentWorkflow ,document, workflowTables, editorState, workflows, auxiliaryTables} = this.state;
     return (
       <Page>
         <Navbar title="Form" backLink={dict.back} />
         <BlockTitle>{dict.workflow_form}</BlockTitle>
-        <DocumentForm document={document} workflowId={workflowId} auxiliaryTables={auxiliaryTables} workflows={workflows} editorState={editorState} onEditorStateChange={this.onEditorStateChange} submit={this.submit} editing={true} handleChange={this.handleChangeValue} onChangeValue={this.onChangeValue}/>
+        <DocumentForm document={document} title={title} abstract={abstract} workflowId={workflowId} workflowTables={workflowTables} records={records} currentWorkflow={currentWorkflow} workflowStateId={workflowStateId} auxiliaryTables={auxiliaryTables} workflows={workflows} editorState={editorState} onEditorStateChange={this.onEditorStateChange} submit={this.submit} editing={true} handleChange={this.handleChangeValue} onChangeValue={this.onChangeValue} removeRecord={this.removeRecord}/>
       </Page>
     );
   }

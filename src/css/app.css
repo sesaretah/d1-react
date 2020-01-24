@@ -27,7 +27,7 @@
 }
 /* Custom color theme properties */
 :root {
-  --f7-theme-color: #673ab7;
+  --f7-theme-color: #1d6f91;
   --f7-theme-color-rgb: 103, 58, 183;
   --f7-theme-color-shade: #7395AE;
   --f7-theme-color-tint: #9c27b0;
@@ -46,17 +46,17 @@
 
 .theme-dark {
 
-  --f7-page-bg-color: #767677;
-  --f7-navbar-bg-color: #767677;
-  --f7-navbar-border-color: #5d5c5c;
+  --f7-page-bg-color: #455055;
+  --f7-navbar-bg-color: #455055;
+  --f7-navbar-border-color: #232a2d;
   --f7-navbar-text-color: #dcdada;
 
 }
 
 .theme-dark .list ul {
-  --f7-list-bg-color: #5d5d5d;
-  --f7-list-border-color: #484848;
-  --f7-list-item-border-color: #484848;
+  --f7-list-bg-color: #333d41;
+  --f7-list-border-color: #232a2d;
+  --f7-list-item-border-color: #232a2d;
   color: #dcdada;
 }
 
@@ -107,4 +107,8 @@ Extra borders for main view and left panel for iOS theme when it behaves as pane
 .aurora .subnavbar {
     margin-top: -3px;
     padding-top: 0px;
+}
+
+.skyblue {
+  background-color: #239dd0;
 }

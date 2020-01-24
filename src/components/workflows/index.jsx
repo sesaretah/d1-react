@@ -28,10 +28,6 @@ export default class Layout extends React.Component {
     this.loadData();
   }
 
-  componentWillReceiveProps(){
-    this.loadData();
-  }
-
   loadData(){
     const f7: Framework7 = Framework7.instance;
     f7.toast.show({ text: dict.receiving, closeTimeout: 2000, position: 'top'});
@@ -40,7 +36,8 @@ export default class Layout extends React.Component {
 
   getList(){
     var workflows = ModelStore.getList()
-    if (workflows){
+    var klass = ModelStore.getKlass()
+    if (workflows && klass === 'Workflow'){
       this.setState({
         workflows: workflows,
       });

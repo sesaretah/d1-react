@@ -55,11 +55,12 @@ export default class WorkflowUpdate extends Component {
 
   getInstance(){
     var workflow = ModelStore.getIntance()
-    if (workflow){
+    var klass = ModelStore.getKlass()
+    if (workflow && klass === 'Workflow'){
       this.setState({
         workflow: workflow,
-        title: workflow.workflow.title,
-        id: workflow.workflow.id
+        title: workflow.title,
+        id: workflow.id
       });
     }
   }

@@ -26,9 +26,10 @@ const DocumentShow = (props) => {
         <Editor editorState={editorState}
           toolbar={{options: [],   inline: { options: []}}}
           readOnly={true} />
-          {props.document.auxiliaries.map((auxiliary) =>
-            <RecordList auxiliaryTable={auxiliary.auxiliary_table} records={auxiliary.records} removeRecord={props.removeRecord}/>
-            )}
+
+        {props.document.auxiliary_records.map((auxiliary) =>
+          <RecordList auxiliaryTable={auxiliary.auxiliary_table} records={[auxiliary]} editable={false}/>
+        )}
       </React.Fragment>
     )
   } else {

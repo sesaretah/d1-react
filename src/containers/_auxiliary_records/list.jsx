@@ -5,12 +5,8 @@ import crypto from 'crypto-js';
 const RecordList = (props) => {
 
   if(props.auxiliaryTable && props.records){
-
     var head = []
     var data_format =props.auxiliaryTable.data_format
-    if (props.editable){
-      head.push(<td>{dict.actions}</td>)
-    }
     if (data_format){
       for (let i = 0; i < data_format.length; i++) {
         head.push(<td key={crypto.lib.WordArray.random(32)}>{data_format[i].field_name}</td>)
@@ -19,7 +15,9 @@ const RecordList = (props) => {
 
     var body = []
     var records = props.records
+
     for (let i = 0; i < records.length; i++) {
+
       if(records[i].data_record){
         var td = []
         for (let j = 0; j < data_format.length; j++) {
@@ -29,16 +27,12 @@ const RecordList = (props) => {
             td.push(<td key={crypto.lib.WordArray.random(32)}></td>)
           }
         }
-        var trash = null
-        if (props.editable) {
-          trash = <td className="checkbox-cell" key={crypto.lib.WordArray.random(32)}>
-            <Button color='gray' onClick={() => props.removeRecord(records[i].uuid)}>
-              <Icon ios="f7:trash" aurora="f7:trash" md="material:trash"></Icon>
-            </Button>
-          </td>
-        }
         body.push(<tr key={crypto.lib.WordArray.random(32)}>
-        {trash}
+        <td className="checkbox-cell" key={crypto.lib.WordArray.random(32)}>
+          <Button color='gray' onClick={() => props.removeRecord(records[i].uuid)}>
+            <Icon ios="f7:trash" aurora="f7:trash" md="material:trash"></Icon>
+          </Button>
+        </td>
         {td}
       </tr>)
     }
@@ -52,6 +46,7 @@ const RecordList = (props) => {
             <td><b>{props.auxiliaryTable.title}</b></td>
           </tr>
           <tr>
+            <td>{dict.actions}</td>
             {head}
           </tr>
         </thead>

@@ -17,10 +17,15 @@ import RoleCreate from './components/roles/create';
 import RoleUpdate from './components/roles/update';
 
 
-import AuxiliaryTable from './components/auxiliary_tables/index';
-import AuxiliaryForm from './components/auxiliary_tables/create';
-import AuxiliaryUpdate from './components/auxiliary_tables/update';
-import AuxiliaryRecord from './containers/auxiliary_tables/record';
+import ProfileShow from './components/profiles/show';
+import ProfileIndex from './components/profiles/index';
+import ProfileCreate from './components/profiles/create';
+import ProfileUpdate from './components/profiles/update';
+
+import AuxiliaryTable from './components/auxiliaryTables/index';
+import AuxiliaryForm from './components/auxiliaryTables/create';
+import AuxiliaryUpdate from './components/auxiliaryTables/update';
+import AuxiliaryTableShow from './components/auxiliaryTables/show';
 
 
 import WorkflowIndex from './components/workflows/index';
@@ -34,6 +39,9 @@ import WorkflowShow from './components/workflows/show';
 import WorkflowTableIndex from './components/workflow_tables/index';
 import WorkflowTableCreate from './components/workflow_tables/create';
 
+import Login from './components/users/Login';
+import SignUp from './components/users/SignUp';
+
 import DynamicRoutePage from './containers/DynamicRoutePage';
 import NotFoundPage from './containers/NotFoundPage';
 import PanelLeftPage from './containers/PanelLeftPage';
@@ -43,6 +51,14 @@ export default [
   {
     path: '/',
     component: HomePage,
+  },
+  {
+    path: '/login/',
+    component: Login,
+  },
+  {
+    path: '/sign_up/',
+    component: SignUp,
   },
   {
     path: '/panel-left/',
@@ -69,21 +85,23 @@ export default [
     component: DocumentForm,
   },
   {
-    path: '/auxiliary_tables/',
+    path: '/auxiliaryTables/',
     component: AuxiliaryTable,
   },
   {
-    path: '/auxiliary_tables/new',
+    path: '/auxiliaryTables/new',
     component: AuxiliaryForm,
   },
   {
-    path: '/auxiliary_tables/:auxiliaryTableId/edit',
+    path: '/auxiliaryTables/:auxiliaryTableId/edit',
     component: AuxiliaryUpdate,
   },
+
   {
-    path: '/auxiliary_tables/record/:auxiliaryTableId',
-    component: AuxiliaryRecord,
+    path: '/auxiliaryTables/:auxiliaryTableId',
+    component: AuxiliaryTableShow,
   },
+
   {
     path: '/workflows/',
     component: WorkflowIndex,
@@ -137,6 +155,24 @@ export default [
     path: '/roles/:roleId',
     component: RoleShow,
   },
+
+  {
+    path: '/profiles/',
+    component: ProfileIndex,
+  },
+  {
+    path: '/profiles/:profileId/edit',
+    component: ProfileUpdate,
+  },
+  {
+    path: '/profiles/new',
+    component: ProfileCreate,
+  },
+  {
+    path: '/profiles/:profileId',
+    component: ProfileShow,
+  },
+
   {
     path: '/workflow_tables/',
     component: WorkflowTableIndex,

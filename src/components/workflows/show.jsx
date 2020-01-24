@@ -41,10 +41,11 @@ export default class WorkflowShow extends Component {
 
   getInstance(){
     var workflow = ModelStore.getIntance()
-    if (workflow){
+    var klass = ModelStore.getKlass()
+    if (workflow && klass === 'Workflow'){
       this.setState({
         workflow: workflow,
-        title: workflow.workflow.title
+        title: workflow.title
       });
     }
   }
@@ -52,7 +53,7 @@ export default class WorkflowShow extends Component {
   fab(){
     if (this.state.workflow){
       return(
-        <Fab href={"/workflows/"+this.state.workflow.workflow.id+"/edit"} target="#main-view"  position="left-bottom" slot="fixed" color="lime">
+        <Fab href={"/workflows/"+this.state.workflow.id+"/edit"} target="#main-view"  position="left-bottom" slot="fixed" color="lime">
           <Icon ios="f7:edit" aurora="f7:edit" md="material:edit"></Icon>
           <Icon ios="f7:close" aurora="f7:close" md="material:close"></Icon>
         </Fab>

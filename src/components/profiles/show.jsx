@@ -16,14 +16,14 @@ import {
 import { dict} from '../../Dict';
 import ModelStore from "../../stores/ModelStore";
 import * as MyActions from "../../actions/MyActions";
-import DocumentShow from "../../containers/documents/show"
+import ProfileShow from "../../containers/profiles/show"
 
 export default class Layout extends Component {
   constructor() {
     super();
     this.getInstance = this.getInstance.bind(this);
     this.state = {
-      document: null,
+      profile: null,
     }
   }
 
@@ -36,24 +36,22 @@ export default class Layout extends Component {
   }
 
   componentDidMount(){
-      MyActions.getInstance('documents', this.$f7route.params['documentId']);
+      MyActions.getInstance('profiles', this.$f7route.params['profileId']);
   }
 
   getInstance(){
-    var document = ModelStore.getIntance()
-    var klass = ModelStore.getKlass()
-    if (document && klass === 'Document'){
+    var profile = ModelStore.getIntance()
+    if (profile){
       this.setState({
-        document: document,
+        profile: profile,
       });
     }
-    console.log(document);
     }
 
   fab(){
-    if (this.state.document){
+    if (this.state.profile){
       return(
-        <Fab href={"/documents/"+this.state.document.id+"/edit"} target="#main-view"  position="left-bottom" slot="fixed" color="lime">
+        <Fab href={"/profiles/"+this.state.profile.id+"/edit"} target="#main-view"  position="left-bottom" slot="fixed" color="lime">
           <Icon ios="f7:edit" aurora="f7:edit" md="material:edit"></Icon>
           <Icon ios="f7:close" aurora="f7:close" md="material:close"></Icon>
         </Fab>
@@ -62,13 +60,13 @@ export default class Layout extends Component {
   }
 
   render() {
-    const {document} = this.state;
+    const {profile} = this.state;
     return (
       <Page>
-        <Navbar title={dict.documents} backLink={dict.back} />
+        <Navbar title={dict.profiles} backLink={dict.back} />
         <BlockTitle></BlockTitle>
         {this.fab()}
-        <DocumentShow document={document}/>
+        <ProfileShow profile={profile}/>
       </Page>
     );
   }
