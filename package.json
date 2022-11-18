@@ -18,7 +18,7 @@
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-draft-wysiwyg": "^1.13.2",
-    "react-scripts": "3.1.1",
+    "react-scripts": "5.0.1",
     "secure-random": "^1.1.2"
   },
   "scripts": {
